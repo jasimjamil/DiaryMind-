@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diary & Memory Exercise App</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon"> <!-- Add favicon -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #FF4E50, #F9D423);
+            color: #fff;
+            line-height: 1.6;
+            padding: 50px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-wrapper {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-wrapper input,
+        .form-wrapper textarea,
+        .form-wrapper button {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            border: none;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-wrapper input,
+        .form-wrapper textarea {
+            background-color: #333;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-wrapper input:focus,
+        .form-wrapper textarea:focus {
+            background-color: #444;
+            box-shadow: 0 4px 10px rgba(92, 107, 192, 0.5);
+        }
+
+        .form-wrapper button {
+            background-color: #FF4E50;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-wrapper button:hover {
+            background-color: #F9D423;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-wrapper textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .response {
+            padding: 20px;
+            margin-top: 30px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideIn 1s ease-out;
+        }
+
+        .response.show {
+            display: block;
+        }
+
+        .response pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Media query for responsiveness */
+        @media (min-width: 768px) {
+            .form-wrapper {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-wrapper button {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diary & Memory Exercise App</h1>
+        
+        <!-- Write Diary Section -->
+        <div class="form-wrapper">
+            <h2>Write Diary Entry</h2>
+            <input type="text" id="diary-user-id" placeholder="Enter User ID" required>
+            <textarea id="diary-content" placeholder="Write your diary content..." required></textarea>
+            <button id="save-diary">Save Entry</button>
+        </div>
+
+        <!-- Memory Exercise Section -->
+        <div class="form-wrapper">
+            <h2>Memory Exercise</h2>
+            <input type="text" id="memory-user-id" placeholder="Enter User ID" required>
+            <input type="text" id="image-url" placeholder="Enter Image URL" required>
+            <input type="text" id="correct-name" placeholder="Enter Correct Name" required>
+            <button id="save-memory-exercise">Save Exercise</button>
+        </div>
+
+        <!-- Chatbot Section -->
+        <div class="form-wrapper">
+            <h2>Chatbot</h2>
+            <input type="text" id="user-input" placeholder="Ask me something..." required>
+            <button id="send-chat">Send</button>
+        </div>
+
+        <div id="chatbot-response" class="response"></div>
+    </div>
+
+    <script>
+        // Handle diary entry submission
+        document.getElementById('save-diary').onclick = async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('diary-user-id').value;
+            const content = document.getElementById('diary-content').value;
+            const response = await fetch('/write-diary/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, content: content })
+            });
+            const data = await response.json();
+            alert(data.message);
+        };
+
+        // Handle memory exercise submission
+        document.getElementById('save-memory-exercise').onclick = async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('memory-user-id').value;
+            const imageUrl = document.getElementById('image-url').value;
+            const correctName = document.getElementById('correct-name').value;
+            const response = await fetch('/memory-exercise/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, image_url: imageUrl, correct_name: correctName })
+            });
+            const data = await response.json();
+            alert(data.message);
+        };
+
+        // Handle chatbot submission
+        document.getElementById('send-chat').onclick = async (e) => {
+            e.preventDefault();
+            const userInput = document.getElementById('user-input').value;
+            const response = await fetch('/chatbot/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_input: userInput })
+            });
+            const data = await response.json();
+            const responseDiv = document.getElementById('chatbot-response');
+            responseDiv.classList.add('show');
+            responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        };
+    </script>
+</body>
+</html>
+
